@@ -3,15 +3,15 @@
     <string name="app_name">Pong</string>
     <string name="paused">P A U S E D</string>
     
-    <string name="one_player">One player</string>
-    <string name="two_players">Two players</string>
-    <string name="no_players">No players</string>
+    <string name="one_player">1 Player</string>
+    <string name="two_players">2 Players</string>
+    <string name="no_players">No Players(aka I literally have nothing better to do than watch a game of pong Mode))</string>
     
     <string name="preferences">Preferences</string>
     
     <string name="new_game">New game</string>
-    <string name="red_wins">A winner is Red!</string>
-    <string name="blue_wins">A winner is Blue!</string>
+    <string name="red_wins">Red Wins!</string>
+    <string name="blue_wins">Blue Wins!</string>
     
     <string name="join_in">Touch to join in!</string>
 	<string name="pause">Pause</string>

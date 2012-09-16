@@ -535,7 +535,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
         // Draw ball stuff
         mPaint.setStyle(Style.FILL);
-        mPaint.setColor(Color.WHITE);
+        //Change ball color to MAGENTA from WHITE Cnewman
+        mPaint.setColor(Color.MAGENTA);
         
         mBall.draw(canvas);
         
@@ -577,17 +578,19 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         }
         
         // Draw a 'lives' counter
-    	mPaint.setColor(Color.WHITE);
+        //Changed lives counter balls to be yellow Cnewman
+    	mPaint.setColor(Color.YELLOW);
     	mPaint.setStyle(Style.FILL_AND_STROKE);
+    	//Increased size of lives circles to (9 * Ball.RADIUS) from 2. CNEWMAN
     	for(int i = 0; i < mRed.getLives(); i++) {
-    		canvas.drawCircle(Ball.RADIUS + PADDING + i * (2 * Ball.RADIUS + PADDING),
+    		canvas.drawCircle(Ball.RADIUS + PADDING + i * (9 * Ball.RADIUS + PADDING),
     				PADDING + Ball.RADIUS,
     				Ball.RADIUS,
     				mPaint);
     	}
-    	
+    	//Increased size of lives circles to (9 * Ball.RADIUS) from 2. CNEWMAN
     	for(int i = 0; i < mBlue.getLives(); i++) {
-    		canvas.drawCircle(Ball.RADIUS + PADDING + i * (2 * Ball.RADIUS + PADDING),
+    		canvas.drawCircle(Ball.RADIUS + PADDING + i * (9 * Ball.RADIUS + PADDING),    				
     				getHeight() - PADDING - Ball.RADIUS,
     				Ball.RADIUS,
     				mPaint);
@@ -971,8 +974,10 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		}
 		
 		public static final double BOUND = Math.PI / 9;
-		public static final float SPEED = 4.0f; 
-		public static final int RADIUS = 4;
+		//Increase initial speed from 4.0f to 8.0f
+		public static final float SPEED = 8.0f;
+		//Increased RADIUS from 4 to 7
+		public static final int RADIUS = 7;
 		public static final double SALT = 4 * Math.PI / 9;
 	}
 

@@ -535,7 +535,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
         // Draw ball stuff
         mPaint.setStyle(Style.FILL);
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.YELLOW);
         
         mBall.draw(canvas);
         
@@ -577,7 +577,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         }
         
         // Draw a 'lives' counter
-    	mPaint.setColor(Color.WHITE);
+    	mPaint.setColor(Color.YELLOW);
     	mPaint.setStyle(Style.FILL_AND_STROKE);
     	for(int i = 0; i < mRed.getLives(); i++) {
     		canvas.drawCircle(Ball.RADIUS + PADDING + i * (2 * Ball.RADIUS + PADDING),
@@ -596,7 +596,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         // Announce the winner!
         if(!gameRunning()) {
         	mPaint.setColor(Color.GREEN);
-        	String s = "You both lose";
+        	String s = "Everyone loses!";
         	
         	if(!mBlue.living()) {
         		s = context.getString(R.string.red_wins);
@@ -1111,6 +1111,6 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		private static final int PADDLE_THICKNESS = 10;
 		
 		/** Width of the paddle */
-		private static final int PADDLE_WIDTH = 40;
+		private static final int PADDLE_WIDTH = 30;
 	}
 }

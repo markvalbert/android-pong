@@ -407,7 +407,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	 * Knocks up the framerate a bit to keep it difficult.
 	 */
 	private void increaseDifficulty() {
-		mBall.speed++;
+		mBall.speed = mBall.speed + mBall.speed + 3;
 	}
 
 	/**

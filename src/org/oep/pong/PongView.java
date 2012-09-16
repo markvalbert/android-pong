@@ -451,14 +451,14 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	 * Knocks up the framerate a bit to keep it difficult.
 	 */
 	private void increaseDifficulty() {
-<<<<<<< HEAD
+//<<<<<<< HEAD
 		eventCounter++;
 		if(eventCounter%5==0){
 			mBall.teleport();
 			mBall.speed*=2;			
 		}
 		mBall.speed+=2;
-=======
+//=======
 //<<<<<<< HEAD
 		aiPrediction(mMagenta, mBlue);
 		totalHits++;
@@ -472,7 +472,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		
 		mBall.speed++;
 //>>>>>>> ljlindgren/master
->>>>>>> secondrepo/master
+//>>>>>>> secondrepo/master
 	}
 
 	/**
@@ -631,12 +631,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
        // mPaint.setColor(Color.WHITE);
 //=======
         mPaint.setStyle(Style.FILL);
-<<<<<<< HEAD
         mPaint.setColor(Color.YELLOW);
-=======
-        mPaint.setColor(Color.MAGENTA);
-//>>>>>>> ljlindgren/master
->>>>>>> secondrepo/master
+
         
         mBall.draw(canvas);
         
@@ -1323,10 +1319,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		private static final int PADDLE_THICKNESS = 10;
 		
 		/** Width of the paddle */
-<<<<<<< HEAD
+
 		private static final int PADDLE_WIDTH = 30;
-=======
-		private static final int PADDLE_WIDTH = 60 ;
->>>>>>> secondrepo/master
+
 	}
 }

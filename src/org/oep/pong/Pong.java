@@ -46,7 +46,8 @@ public class Pong extends Activity {
 		
 		this.findViewById(R.id.title_btnOnePlayer)
 		.setOnClickListener(new OnClickListener() {
-		//CN	@Override
+			//@Override
+
 			public void onClick(View v) {
 				startGame(false,true);
 			}
@@ -54,7 +55,7 @@ public class Pong extends Activity {
 		
 		this.findViewById(R.id.title_btnTwoPlayer)
 		.setOnClickListener(new OnClickListener() {
-		//CN	@Override
+			//@Override
 			public void onClick(View v) {
 				startGame(true,true);
 			}

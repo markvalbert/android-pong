@@ -615,14 +615,14 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
         // Draw ball stuff
         mPaint.setStyle(Style.FILL);
-<<<<<<< HEAD
+
         mPaint.setColor(Color.BLACK);
-=======
+
         //Change ball color to MAGENTA from WHITE Cnewman
         mPaint.setColor(Color.MAGENTA);
         mPaint.setColor(Color.YELLOW);
         mPaint.setColor(Color.MAGENTA);
->>>>>>> otherrepo/master
+
         
         mBall.draw(canvas);
         
@@ -665,12 +665,10 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         }
         
         // Draw a 'lives' counter
-<<<<<<< HEAD
     	mPaint.setColor(Color.RED);
-=======
         //Changed lives counter balls to be yellow Cnewman
     	mPaint.setColor(Color.YELLOW);
->>>>>>> otherrepo/master
+    	
     	mPaint.setStyle(Style.FILL_AND_STROKE);
     	//Increased size of lives circles to (9 * Ball.RADIUS) from 2. CNEWMAN
     	for(int i = 0; i < mRed.getLives(); i++) {
@@ -680,7 +678,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     				mPaint);
     		
     	}
-<<<<<<< HEAD
+
     	float redWidth = Ball.RADIUS + PADDING + 4 * (2 * Ball.RADIUS + PADDING);
     	float redHeight = 25;
     	String redScore = context.getString(R.string.red_score);
@@ -692,9 +690,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     	// Draw a 'lives' counter
     	mPaint.setColor(Color.BLUE);
     	mPaint.setStyle(Style.FILL_AND_STROKE);
-=======
+
     	//Increased size of lives circles to (9 * Ball.RADIUS) from 2. CNEWMAN
->>>>>>> otherrepo/master
     	for(int i = 0; i < mBlue.getLives(); i++) {
     		canvas.drawCircle(Ball.RADIUS + PADDING + i * (9 * Ball.RADIUS + PADDING),    				
     				getHeight() - PADDING - Ball.RADIUS,
@@ -1104,17 +1101,13 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		}
 		
 		public static final double BOUND = Math.PI / 9;
-<<<<<<< HEAD
-		public static final float SPEED = 6.0f; 
-		public static final int RADIUS = 4;
-=======
+
 		//Increase initial speed from 4.0f to 8.0f
 		public static final float SPEED = 8.0f;
 		//Increased RADIUS from 4 to 7
 		public static final int RADIUS = 7;
 		
 		public static final float CENTER_HIT_CONSTANT = 6f;
->>>>>>> otherrepo/master
 		public static final double SALT = 4 * Math.PI / 9;
 	}
 	

@@ -447,6 +447,14 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	 * Knocks up the framerate a bit to keep it difficult.
 	 */
 	private void increaseDifficulty() {
+
+		if (mBall.speed%2 == 0)
+		mBall.speed = mBall.speed+3;
+		
+		mBall.speed++;
+		
+		
+
 		aiPrediction(mMagenta, mBlue);
 		totalHits++;
 		if (totalHits > 5)
@@ -454,10 +462,13 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			mBall.speed = mBall.speed+ mBall.speed + 2;
 			
 		}
+<<<<<<< HEAD
 
 		mBall.speed = mBall.speed + mBall.speed + 3;
 		
 		mBall.speed++;
+=======
+>>>>>>> ThirdRepo/master
 	}
 
 	/**

@@ -462,13 +462,9 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			mBall.speed = mBall.speed+ mBall.speed + 2;
 			
 		}
-<<<<<<< HEAD
-
 		mBall.speed = mBall.speed + mBall.speed + 3;
 		
 		mBall.speed++;
-=======
->>>>>>> ThirdRepo/master
 	}
 
 	/**

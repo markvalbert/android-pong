@@ -8,14 +8,15 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.Paint.Style;
+import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -52,6 +53,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	
 	/** Preferences loaded at startup */
 	private int mBallSpeedModifier;
+	private int totalHits =0;
 	
 	/** Lives modifier */
 	private int mLivesModifier;
@@ -62,6 +64,11 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	/** CPU handicap */
 	private int mCpuHandicap;
 	
+/** Snow Object*/
+	
+	private Snowy mSnowy = null;
+
+	
 	/** Starts a new round when set to true */
 	private boolean mNewRound = true;
 	
@@ -71,7 +78,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	/** Mutes sounds when true */
 	private boolean mMuted = false;
 
-	private Paddle mRed, mBlue;
+	private Paddle mRed, mBlue, mGreen, mMagenta;
+
 	
 	/** Touch boxes for various functions. These are assigned in initialize() */
 	private Rect mPauseTouchBox;
@@ -96,7 +104,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	private static final int PADDING = 3;
 	
 	/** Scrollwheel sensitivity */
-	private static final int SCROLL_SENSITIVITY = 80;
+	private static final int SCROLL_SENSITIVITY = 90;
 
 	/** Redraws the screen according to FPS */
 	private RefreshHandler mRedrawHandler = new RefreshHandler();
@@ -104,6 +112,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	/** Flags indicating who is a player */
 	private boolean mRedPlayer = false, mBluePlayer = false;
 
+	private Starfield mStarfield = null;
+	
 	/**
 	 * An overloaded class that repaints this view in a separate thread.
 	 * Calling PongView.update() should initiate the thread.
@@ -257,7 +267,9 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 	
 	protected void handleBounces(float px, float py) {
 		handleTopFastBounce(mRed, px, py);
+		handleMiddleFastBounce(mMagenta,px,py);
 		handleBottomFastBounce(mBlue, px, py);
+		handleMiddleBounce(mGreen, px, py);
 		
 		// Handle bouncing off of a wall
 		if(mBall.x <= Ball.RADIUS || mBall.x >= getWidth() - Ball.RADIUS) {
@@ -291,6 +303,32 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			increaseDifficulty();
 		}
 	}
+	
+	protected void handleMiddleFastBounce(Paddle paddle, float px, float py)
+	{
+		if (mBall.goingUp() == true )
+		{
+			handleTopFastBounce(paddle,px,py);
+		}
+		else if ( mBall.goingDown() == true  )
+		{
+			handleBottomFastBounce(paddle, px, py);
+		}
+	}
+
+	protected void handleMiddleBounce(Paddle paddle, float px, float py)
+	{
+		if(mBall.goingDown()==false)
+		{
+			handleTopFastBounce(paddle, px, py);
+		}
+		
+		else if(mBall.goingUp()==false)
+		{
+			handleBottomFastBounce(paddle, px, py); 
+		}
+	}
+
 	
 	protected void handleBottomFastBounce(Paddle paddle, float px, float py) {
 		if(mBall.goingDown() == false) return;
@@ -403,10 +441,22 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		cpu.move(true);
 	}
 	
+ 
+	
 	/**
 	 * Knocks up the framerate a bit to keep it difficult.
 	 */
 	private void increaseDifficulty() {
+		aiPrediction(mMagenta, mBlue);
+		totalHits++;
+		if (totalHits > 5)
+		{
+			mBall.speed = mBall.speed+ mBall.speed + 2;
+			
+		}
+
+		mBall.speed = mBall.speed + mBall.speed + 3;
+		
 		mBall.speed++;
 	}
 
@@ -435,6 +485,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     private void initializePongView() {
     	initializePause();
     	initializePaddles();
+    	initializeSnowy();
+    	initializeStarfield();
     }
     
     private void initializePause() {
@@ -447,21 +499,36 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     private void initializePaddles() {
     	Rect redTouch = new Rect(0,0,getWidth(),getHeight() / 8);
     	Rect blueTouch = new Rect(0, 7 * getHeight() / 8, getWidth(), getHeight());
+    	Rect magentaTouch = new Rect(0, 7* getHeight() / 5, getWidth(), getHeight());
+
+    	mRed = new Paddle(Color.RED, redTouch.bottom + PADDING);
+    	mBlue = new Paddle(Color.BLUE, blueTouch.top - PADDING - Paddle.PADDLE_THICKNESS);
+    	mMagenta = new Paddle(Color.MAGENTA, magentaTouch.top /PADDING + 10 );
+    	Rect greenTouch = new Rect(0, 7 * getHeight() / 5, getWidth(), getHeight()); 
     	
     	mRed = new Paddle(Color.RED, redTouch.bottom + PADDING);
     	mBlue = new Paddle(Color.BLUE, blueTouch.top - PADDING - Paddle.PADDLE_THICKNESS);
-    	
+    	mGreen = new Paddle(Color.GREEN, greenTouch.top / PADDING + 8); 
+
+    	mGreen.setTouchbox(greenTouch); 
     	mRed.setTouchbox( redTouch );
     	mBlue.setTouchbox( blueTouch );
+    	mMagenta.setTouchbox(magentaTouch);
     	
+    	mGreen.setHandicap(mCpuHandicap); 
     	mRed.setHandicap(mCpuHandicap);
     	mBlue.setHandicap(mCpuHandicap);
+    	mMagenta.setHandicap(mCpuHandicap);
     	
     	mRed.player = mRedPlayer;
     	mBlue.player = mBluePlayer;
     	
     	mRed.setLives(STARTING_LIVES + mLivesModifier);
     	mBlue.setLives(STARTING_LIVES + mLivesModifier);
+    }
+    
+    private void initializeStarfield() {
+    	mStarfield = new Starfield(getWidth(), getHeight());	
     }
     
     /**
@@ -474,6 +541,12 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     	mBall.randomAngle();
     	mBall.pause();
     }
+    
+    private void initializeSnowy() {
+    	mSnowy = new Snowy(getWidth(), getHeight());	
+    }
+
+    
     
     protected float bound(float x, float low, float hi) {
     	return Math.max(low, Math.min(x, hi));
@@ -523,9 +596,15 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
     	Context context = getContext();
     	
+    	// Draw starfield
+    	mStarfield.draw(canvas);
+    	
         // Draw the paddles / touch boundaries
     	mRed.draw(canvas);
     	mBlue.draw(canvas);
+    	mMagenta.draw(canvas);
+    	mSnowy.draw(canvas);
+    	mGreen.draw(canvas); 
 
     	// Draw touchboxes if needed
     	if(gameRunning() && mRed.player && mCurrentState == State.Running)
@@ -536,9 +615,17 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         
         // Draw ball stuff
         mPaint.setStyle(Style.FILL);
+<<<<<<< HEAD
         mPaint.setColor(Color.BLACK);
+=======
+        //Change ball color to MAGENTA from WHITE Cnewman
+        mPaint.setColor(Color.MAGENTA);
+        mPaint.setColor(Color.YELLOW);
+        mPaint.setColor(Color.MAGENTA);
+>>>>>>> otherrepo/master
         
         mBall.draw(canvas);
+        
         
         // If either is a not a player, blink and let them know they can join in!
         // This blinks with the ball.
@@ -578,15 +665,22 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
         }
         
         // Draw a 'lives' counter
+<<<<<<< HEAD
     	mPaint.setColor(Color.RED);
+=======
+        //Changed lives counter balls to be yellow Cnewman
+    	mPaint.setColor(Color.YELLOW);
+>>>>>>> otherrepo/master
     	mPaint.setStyle(Style.FILL_AND_STROKE);
+    	//Increased size of lives circles to (9 * Ball.RADIUS) from 2. CNEWMAN
     	for(int i = 0; i < mRed.getLives(); i++) {
-    		canvas.drawCircle(Ball.RADIUS + PADDING + i * (2 * Ball.RADIUS + PADDING),
+    		canvas.drawCircle(Ball.RADIUS + PADDING + i * (9 * Ball.RADIUS + PADDING),
     				PADDING + Ball.RADIUS,
     				Ball.RADIUS,
     				mPaint);
     		
     	}
+<<<<<<< HEAD
     	float redWidth = Ball.RADIUS + PADDING + 4 * (2 * Ball.RADIUS + PADDING);
     	float redHeight = 25;
     	String redScore = context.getString(R.string.red_score);
@@ -598,8 +692,11 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
     	// Draw a 'lives' counter
     	mPaint.setColor(Color.BLUE);
     	mPaint.setStyle(Style.FILL_AND_STROKE);
+=======
+    	//Increased size of lives circles to (9 * Ball.RADIUS) from 2. CNEWMAN
+>>>>>>> otherrepo/master
     	for(int i = 0; i < mBlue.getLives(); i++) {
-    		canvas.drawCircle(Ball.RADIUS + PADDING + i * (2 * Ball.RADIUS + PADDING),
+    		canvas.drawCircle(Ball.RADIUS + PADDING + i * (9 * Ball.RADIUS + PADDING),    				
     				getHeight() - PADDING - Ball.RADIUS,
     				Ball.RADIUS,
     				mPaint);
@@ -804,9 +901,12 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		public float x, y, xp, yp, vx, vy;
 		public float speed = SPEED;
 		
+		
 		protected double mAngle;
 		protected boolean mNextPointKnown = false;
 		protected int mCounter = 0;
+		
+		
 		
 		public Ball() {
 			findVector();
@@ -908,6 +1008,7 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			
 			angle %= (2 * Math.PI);
 			angle = salt(angle, p);
+			this.speed = applyCenterHitBonus(p);
 //			normalize(p);
 			setAngle(angle);
 		}
@@ -979,6 +1080,19 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 			return Math.max(BOUND, Math.min(Math.PI - BOUND, angle));
 		}
 		
+		protected float applyCenterHitBonus(Paddle paddle){
+			int cx = paddle.centerX();
+			float newSpeed;
+			float centerBonusIndicator = Math.abs(cx-this.x);
+			if(centerBonusIndicator <= CENTER_HIT_CONSTANT){
+			   newSpeed = this.speed * 2;
+			}
+			else {
+				newSpeed = this.speed;				
+			}
+			return newSpeed;
+		}
+		
 
 		/**
 		 * Given it a coordinate, it transforms it into a proper x-coordinate for the ball.
@@ -990,11 +1104,150 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		}
 		
 		public static final double BOUND = Math.PI / 9;
+<<<<<<< HEAD
 		public static final float SPEED = 6.0f; 
 		public static final int RADIUS = 4;
+=======
+		//Increase initial speed from 4.0f to 8.0f
+		public static final float SPEED = 8.0f;
+		//Increased RADIUS from 4 to 7
+		public static final int RADIUS = 7;
+		
+		public static final float CENTER_HIT_CONSTANT = 6f;
+>>>>>>> otherrepo/master
 		public static final double SALT = 4 * Math.PI / 9;
 	}
+	
+	class Snowy {
+		private int width = 0;
+		private int height = 0;
+		private int nSnow = 500;
+		private int maxSpeed = 2;
+		private Snow[] snowArray = new Snow[nSnow];
+		private Random r = new Random(); 
+		
+		
+		public class Snow {
+			public int x = 0;
+			public int y = 0;
+			public int radius = 0;
+			public int speed = 0;
+			public int color = 0;
+		}
 
+		public Snowy(int w, int h) {
+			height = h;
+			width = w;
+			for (int i=0; i<nSnow; i++) {
+				resetSnow(snowArray[i] = new Snow());
+				snowArray[i].y = r.nextInt(height);
+			}
+		}
+
+		/* Reset the Snow flakes*/
+
+		private void resetSnow(Snow snow) {	
+			snow.y = 0;
+			snow.x = r.nextInt(width);
+			snow.speed = r.nextInt(maxSpeed)*2;
+			snow.radius = 2;
+			snow.color= Color.WHITE ;
+			}
+		
+		/* Moves the Snow Flakes*/
+
+		private void moveSnow(Snow snow) {
+			snow.y = snow.y + snow.speed * 2;
+			if (snow.y > height) resetSnow(snow);
+		}
+
+		/*Draws the Snow Flakes*/
+		public void draw(Canvas canvas) {
+			for (int i=0; i<nSnow; i++) {
+				moveSnow(snowArray[i]);
+				mPaint.setColor(snowArray[i].color);
+				canvas.drawPoint(snowArray[i].x, snowArray[i].y, mPaint);
+			}
+		}
+	}
+
+	
+	
+	
+	
+	
+	
+	
+
+	class Star {
+		public int x = 0;
+		public int y = 0;
+		public int radius = 0;
+		public int speed = 0;
+		public int color = 0;
+		
+		public Star () {}
+		
+		public Star(int x, int y, int radius, int speed, int color) {
+			this.x = x;
+			this.y = y;
+			this.radius = radius;
+			this.speed = speed;
+			this.color = color;
+		}
+	}
+
+	class Starfield {
+		private int width = 0;
+		private int height = 0;
+		private int numStars = 128;
+		private int maxSpeed = 3;
+		private Star[] starArray = new Star[numStars];
+		private Random r = new Random(); 
+		
+		public Starfield(int w, int h) {
+			height = h;
+			width = w;
+			
+			for (int i=0; i<numStars; i++) {
+				resetStar(starArray[i] = new Star());
+				starArray[i].y = r.nextInt(height); // resetStar() sets y = 0
+				
+			}
+		}
+		
+		private int calculateColor(int speed) {
+			switch(speed) {
+				case 0: return Color.RED; // should never happen
+				case 1: return Color.DKGRAY;
+				case 2: return Color.GRAY;
+				case 3: return Color.LTGRAY;
+				default: return Color.WHITE;
+			}
+		}
+		
+		private void resetStar(Star star) {	
+			star.y = 0;
+			star.x = r.nextInt(width);
+			star.speed = r.nextInt(maxSpeed)+1;
+			star.radius = star.speed;
+			star.color = calculateColor(star.speed);
+		}
+		
+		private void moveStar(Star star) {
+			star.y = star.y + star.speed * 4;
+			if (star.y > height) resetStar(star);
+		}
+		
+		public void draw(Canvas canvas) {
+			for (int i=0; i<numStars; i++) {
+				moveStar(starArray[i]);
+				mPaint.setColor(starArray[i].color);
+				canvas.drawCircle(starArray[i].x, starArray[i].y, starArray[i].radius, mPaint);
+			}
+		}
+	}
+	
 	class Paddle {
 		protected int mColor;
 		protected Rect mRect;
@@ -1130,6 +1383,8 @@ public class PongView extends View implements OnTouchListener, OnKeyListener {
 		private static final int PADDLE_THICKNESS = 10;
 		
 		/** Width of the paddle */
-		private static final int PADDLE_WIDTH = 40;
+
+		private static final int PADDLE_WIDTH = 10;
+
 	}
 }
